@@ -12,10 +12,10 @@
 
 ### [기술 스택]
 
-> front-end : HTML/CSS, JavaScript/jQuery, Vue.js, Bootstrap
+> front-end : HTML5/CSS, JavaScript, Vue.js
 >
 > back-end : Java, Spring Framework, Spring Security, JPA
 >
-> DB : H2(local)
+> DB : H2
 >
-> infra : Apache(TomCat), AWS EC2
+> infra : Apache(TomCat)
