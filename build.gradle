@@ -1,0 +1,131 @@
+ext {
+    querydslVersion = "4.2.2"
+}
+
+buildscript {
+    ext {
+        springBootVersion = '2.3.4.RELEASE'
+        querydslPluginVersion = '1.0.10'
+    }
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven { url "https://plugins.gradle.org/m2/" } // plugin 저장소
+    }
+    dependencies {
+        classpath "com.gradle.publish:plugin-publish-plugin:0.13.0"
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.7.RELEASE"
+        classpath("gradle.plugin.com.ewerk.gradle.plugins:querydsl-plugin:${querydslPluginVersion}")
+        classpath('net.ltgt.gradle:gradle-apt-plugin:0.18')
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: "com.gradle.plugin-publish"
+
+    sourceCompatibility = 1.8
+
+    configurations {
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    // 모든 모듈에서 사용하는 라이브러리
+    dependencies {
+        compile group: 'org.springframework.boot', name: 'spring-boot-starter-mustache', version: '2.3.4.RELEASE'
+        implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+        compile 'com.h2database:h2'
+        compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.19'
+        compile 'org.springframework.data:spring-data-envers'
+        // https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jdbc
+        compile group: 'org.apache.tomcat', name: 'tomcat-jdbc', version: '9.0.2'
+        // https://mvnrepository.com/artifact/org.springframework/spring-aspects
+        implementation group: 'org.springframework', name: 'spring-aspects', version: '5.2.13.RELEASE'
+        implementation 'org.springframework.boot:spring-boot-starter-actuator'
+        implementation 'org.springframework.boot:spring-boot-starter-web'
+        implementation 'io.projectreactor:reactor-core:3.2.5.RELEASE'
+        implementation 'org.springframework.boot:spring-boot-starter-security'
+        implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
+        implementation group: 'org.hibernate', name: 'hibernate-validator', version: '7.0.1.Final'
+        compileOnly 'org.projectlombok:lombok'
+        developmentOnly 'org.springframework.boot:spring-boot-devtools'
+        annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+        annotationProcessor 'org.projectlombok:lombok'
+        testImplementation('org.springframework.boot:spring-boot-starter-test') {
+            exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+        }
+        // https://mvnrepository.com/artifact/org.flywaydb/flyway-core
+        compile group: 'org.flywaydb', name: 'flyway-core', version: '6.5.5'
+        compile('org.springframework.boot:spring-boot-starter-thymeleaf')
+    }
+
+
+}
+
+def serviceProject =        project(":shop-domain")
+
+// 쿼리 DSL
+def querydslProjects = [serviceProject]
+
+configure(querydslProjects) {
+
+    def querydslSrcDir = "src/main/generated"
+
+    apply plugin: "com.ewerk.gradle.plugins.querydsl"
+    apply plugin: "idea"
+    apply plugin: 'net.ltgt.apt-idea'
+
+    dependencies {
+        compile("com.querydsl:querydsl-jpa")
+        compile("com.querydsl:querydsl-apt")
+        compile("com.querydsl:querydsl-sql:$querydslVersion")
+        annotationProcessor("com.querydsl:querydsl-jpa")
+        annotationProcessor("com.querydsl:querydsl-apt")
+    }
+
+    querydsl {
+        library = "com.querydsl:querydsl-apt:4.2.2"
+        jpa = true
+        querydslSourcesDir = querydslSrcDir
+    }
+    compileQuerydsl {
+        options.annotationProcessorPath = configurations.querydsl
+    }
+    configurations {
+        querydsl.extendsFrom compileClasspath
+    }
+
+    sourceSets {
+        main {
+            java {
+                srcDirs = ["src/main/java", querydslSrcDir]
+            }
+        }
+    }
+    tasks.withType(JavaCompile) {
+        options.annotationProcessorGeneratedSourcesDirectory = file(querydslSrcDir)
+    }
+    idea {
+        module {
+            sourceDirs += file(querydslSrcDir)
+        }
+    }
+    subprojects {
+    }
+
+    project.afterEvaluate {
+        project.tasks.compileQuerydslJava {
+            onlyIf {false}
+        }
+    }
+}
+

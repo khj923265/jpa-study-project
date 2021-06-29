@@ -1,0 +1,22 @@
+[
+  {
+    "title": "메인 상품1",
+    "subtitle": "Great Lookbook 2021",
+    "image": "images/slider/slide-2.jpg"
+  },
+  {
+    "title": "메인 상품2",
+    "subtitle": "메인 상품2 설명",
+    "image": "images/slider/slide-2.jpg"
+  },
+  {
+    "title": "메인 상품3",
+    "subtitle": "메인 상품3 설명",
+    "image": "images/slider/slide-2.jpg"
+  },
+  {
+    "title": "메인 상품4",
+    "subtitle": "메인 상품4 설명",
+    "image": "images/slider/slide-2.jpg"
+  }
+]
