@@ -15,12 +15,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/cart")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:8081")
 public class CartApiController {
 
     private final CartService cartService;
 
     @PostMapping("")
-    @CrossOrigin(origins ="http://localhost:8081" )
     public void insert(@RequestBody CartRequest cartRequest){
 
         Member member = Member.builder()
@@ -41,9 +41,8 @@ public class CartApiController {
     }
 
     @GetMapping("/{id}")
-    @CrossOrigin(origins = "http://localhost:8081")
     public ApiResponse<List<CartResponse>> read(@PathVariable Long id){
         return ApiResponse.ok(cartService.getCarts(id));
-
     }
+
 }

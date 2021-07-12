@@ -27,7 +27,6 @@ export default{
         },
         async read({commit},id){
             const response = await getCarts(id);
-            console.log("response=====",response);
             commit("insertCart",response);
         }
     },

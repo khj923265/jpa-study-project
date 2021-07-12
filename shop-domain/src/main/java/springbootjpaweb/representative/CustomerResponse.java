@@ -1,5 +1,5 @@
-package springbootjpaweb.representative;//package com.jiwon.springbootjpaweb.representative;
-//
+package springbootjpaweb.representative;
+
 //import lombok.AllArgsConstructor;
 //import lombok.Builder;
 //import lombok.Data;
