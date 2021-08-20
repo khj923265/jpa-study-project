@@ -2,7 +2,7 @@ import {
     read,
     getProduct
 } from '../../service/product/productApiService'
-
+import store from "@/store/member/index";
 
 export default{
     namespaced: true,
@@ -35,6 +35,7 @@ export default{
         async read({commit}){
             const response = await read();
             commit("setProducts", response);
+            console.log(response);
         },
         async getProduct({commit},id){
             const response = await getProduct(id);

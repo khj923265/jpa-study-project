@@ -2,12 +2,13 @@ import {
     create,
     login
 } from '../../service/member/memberApiService'
-
+import axios from "axios";
 
 export default{
     namespaced: true,
     state: {
         member: [],
+        accessToken:''
     },
     getters:{
       getMember(){
@@ -16,8 +17,9 @@ export default{
     },
     mutations: {
         //로그인 성공시
-        loginSuccess(state, member){
-            state.member.id = member;
+        loginSuccess(state, data){
+            state.member.id = data.result.id;
+            state.token = data.result.token;
         }
     },
     actions: {
@@ -25,8 +27,12 @@ export default{
             await create(signupObj);
         },
         async login({commit}, member){
-            const response = await login(member);
-            await commit("loginSuccess", response.result.id);
+            await login(member).then((data) => {
+                commit("loginSuccess", data)
+                axios.defaults.headers.common['Authorization'] = `Bearer ${data.result.token}`;
+            });
+            console.log("member: ", this.state.member)
+            console.log("token", this.state.token)
         }
     },
     modules: {}

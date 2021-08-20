@@ -10,15 +10,18 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import springbootjpaweb.domain.Role;
 import springbootjpaweb.service.MemberService;
 
 import java.util.Optional;
@@ -29,6 +32,7 @@ import java.util.Optional;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private MemberService memberService;
+    private JwtTokenProvider jwtTokenProvider;
 
     // 패스워드 인코딩을 사용하기 위한 빈
     @Bean
@@ -71,11 +75,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.headers().frameOptions().disable();
+
         http.cors().and().csrf().disable().formLogin().disable()
-                .authorizeRequests()
-                // 페이지 권한 설정
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션사용 X
+                .and()
+                .authorizeRequests() // 페이지 권한 설정
 //                .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/").hasRole("USER")
+                .antMatchers("/cart/**").hasRole("USER")
+                .antMatchers("/product/**").hasRole("USER")
                 .antMatchers("/**").permitAll()
                 .and() // 로그인 설정
                 .formLogin()
@@ -89,7 +96,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .invalidateHttpSession(true)
                 .and()
                 // 403 예외처리 핸들링
-                .exceptionHandling().accessDeniedPage("/user-access-denied");
+                .exceptionHandling().accessDeniedPage("/user-access-denied")
+                .and()
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+                        UsernamePasswordAuthenticationFilter.class);
+        // JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 전에 넣는다
+
         http.authorizeRequests()
                 .requestMatchers(CorsUtils::isPreFlightRequest)
                 .permitAll()

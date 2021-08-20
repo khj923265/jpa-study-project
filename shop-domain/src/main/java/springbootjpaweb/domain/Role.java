@@ -1,13 +1,24 @@
 package springbootjpaweb.domain;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@AllArgsConstructor
 @Getter
 public enum Role {
-    ADMIN("ROLE_ADMIN"),
-    USER("ROLE_USER");
+    ADMIN("1", "ROLE_ADMIN"),
+    USER("2", "ROLE_USER");
+    private final String code;
+    private final String symbol;
 
-    private String value;
+    Role(String code, String symbol) {
+        this.code = code;
+        this.symbol = symbol;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public String getSymbol() {
+        return symbol;
+    }
 }

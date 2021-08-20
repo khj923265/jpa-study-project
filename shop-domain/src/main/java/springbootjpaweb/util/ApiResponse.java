@@ -59,7 +59,7 @@ public class ApiResponse<T> {
     }
 
     public static <T> ApiResponse<T> ok(T result) {
-        return new ApiResponse<>(true, "200", "", () -> result);
+        return new ApiResponse<>(true, "200", "성공", () -> result);
     }
 
     public static <T> ApiResponse<T> fail(String code, T result) {

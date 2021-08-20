@@ -117,7 +117,7 @@ export default {
   name: 'cartPage',
   data() {
     return {
-      carts2: null,
+      carts2: "",
     }
   },
   computed: {

@@ -1,6 +1,9 @@
 import axios from "axios";
+// import store from '@/store/member/index';
 
 const MEMBER_BASE_PATH = 'member';
+// const token = store.state.token;
+
 axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
 export const create = (data) => axios.post(MEMBER_BASE_PATH + '/signup', data)
     .then(({data}) => data)
